@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/texto.dart';
 import '../services/like_service.dart';
-import '../services/pending_service.dart'; // ⬅ IMPORTANTE
+import '../services/pending_service.dart';
 import '../telas/detalhes_page.dart';
 
 class MovieCard extends StatefulWidget {
@@ -44,9 +44,7 @@ class _MovieCardState extends State<MovieCard> {
       poster: widget.imageUrl,
     );
 
-    setState(() {
-      isLiked = !isLiked;
-    });
+    setState(() => isLiked = !isLiked);
   }
 
   void togglePending() {
@@ -56,9 +54,7 @@ class _MovieCardState extends State<MovieCard> {
       poster: widget.imageUrl,
     );
 
-    setState(() {
-      isPending = !isPending;
-    });
+    setState(() => isPending = !isPending);
   }
 
   void openDetails() {
@@ -76,7 +72,7 @@ class _MovieCardState extends State<MovieCard> {
       onTap: openDetails,
       child: SizedBox(
         width: 180,
-        height: 330,
+        height: 310, // <<< ALTURA FIXA PARA REMOVER OVERFLOW
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
@@ -90,18 +86,20 @@ class _MovieCardState extends State<MovieCard> {
               ),
             ],
           ),
+
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              /// POSTER
               ClipRRect(
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                 child: Image.network(
                   widget.imageUrl,
-                  height: 185,
+                  height: 170, // Ajustado para caber no card total
                   width: double.infinity,
                   fit: BoxFit.cover,
                   errorBuilder: (_, __, ___) => const SizedBox(
-                    height: 185,
+                    height: 170,
                     child: Center(
                       child: Icon(Icons.broken_image, color: Colors.grey, size: 40),
                     ),
@@ -109,88 +107,88 @@ class _MovieCardState extends State<MovieCard> {
                 ),
               ),
 
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Textos(
-                        widget.title,
-                        Colors.white,
-                        tamanhoFonte: 15,
-                        pesoFonte: FontWeight.bold,
-                        maxLinhas: 1,
-                        overflow: TextOverflow.ellipsis,
-                        padding: EdgeInsets.zero,
-                      ),
+              /// CONTEÚDO DO CARD
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    /// TÍTULO
+                    Textos(
+                      widget.title,
+                      Colors.white,
+                      tamanhoFonte: 14,
+                      pesoFonte: FontWeight.bold,
+                      maxLinhas: 1,
+                      overflow: TextOverflow.ellipsis,
+                      padding: EdgeInsets.zero,
+                    ),
 
-                      const SizedBox(height: 4),
+                    const SizedBox(height: 3),
 
-                      Textos(
-                        widget.category,
-                        Colors.white70,
-                        tamanhoFonte: 12,
-                        pesoFonte: FontWeight.w400,
-                        maxLinhas: 1,
-                        overflow: TextOverflow.ellipsis,
-                        padding: EdgeInsets.zero,
-                      ),
+                    /// CATEGORIA
+                    Textos(
+                      widget.category,
+                      Colors.white70,
+                      tamanhoFonte: 12,
+                      maxLinhas: 1,
+                      overflow: TextOverflow.ellipsis,
+                      padding: EdgeInsets.zero,
+                    ),
 
-                      const Spacer(),
+                    const SizedBox(height: 8),
 
-                      Row(
-                        children: [
-                          const Icon(Icons.star, color: Colors.amber, size: 16),
-                          const SizedBox(width: 3),
+                    /// NOTA + BOTÕES
+                    Row(
+                      children: [
+                        const Icon(Icons.star, color: Colors.amber, size: 14),
 
-                          Textos(
-                            widget.rating.toStringAsFixed(1),
-                            Colors.white,
-                            tamanhoFonte: 14,
-                            pesoFonte: FontWeight.bold,
-                            padding: EdgeInsets.zero,
+                        const SizedBox(width: 4),
+
+                        Textos(
+                          widget.rating.toStringAsFixed(1),
+                          Colors.white,
+                          tamanhoFonte: 13,
+                          pesoFonte: FontWeight.bold,
+                          padding: EdgeInsets.zero,
+                        ),
+
+                        const Spacer(),
+
+                        /// ❤️ Like
+                        IconButton(
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(
+                            minWidth: 30,
+                            minHeight: 30,
                           ),
-
-                          const Spacer(),
-
-                          Column(
-                            children: [
-                              // ❤️ Botão de curtir
-                              SizedBox(
-                                height: 26,
-                                width: 26,
-                                child: IconButton(
-                                  padding: EdgeInsets.zero,
-                                  onPressed: toggleLike,
-                                  icon: Icon(
-                                    isLiked ? Icons.favorite : Icons.favorite_border,
-                                    color: Colors.redAccent,
-                                    size: 20,
-                                  ),
-                                ),
-                              ),
-
-                              // ⏳ Botão de Pendentes (NOVO)
-                              SizedBox(
-                                height: 26,
-                                width: 26,
-                                child: IconButton(
-                                  padding: EdgeInsets.zero,
-                                  onPressed: togglePending,
-                                  icon: Icon(
-                                    isPending ? Icons.check_circle : Icons.schedule,
-                                    color: isPending ? Colors.greenAccent : Colors.white,
-                                    size: 20,
-                                  ),
-                                ),
-                              ),
-                            ],
+                          onPressed: toggleLike,
+                          icon: Icon(
+                            isLiked
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: Colors.redAccent,
+                            size: 20,
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+
+                        /// ⏳ Pendentes
+                        IconButton(
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(
+                            minWidth: 30,
+                            minHeight: 30,
+                          ),
+                          onPressed: togglePending,
+                          icon: Icon(
+                            isPending ? Icons.check_circle : Icons.schedule,
+                            color: isPending ? Colors.greenAccent : Colors.white,
+                            size: 20,
+                          ),
+                        )
+                      ],
+                    )
+                  ],
                 ),
               ),
             ],

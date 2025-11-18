@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../movie.dart';
+import '../telas/detalhes_page.dart';
 
 const String _imageBaseUrl = 'https://image.tmdb.org/t/p/w500';
 
@@ -38,8 +39,10 @@ class _DestaqueFilmesState extends State<DestaqueFilmes> {
     return results.map((movie) {
       final poster = movie["poster_path"] ?? "";
       final title = movie["title"] ?? "Sem título";
+      final id = movie["id"] ?? 0;
 
       return {
+        "id": id,
         "imageUrl": poster.isNotEmpty
             ? "$_imageBaseUrl$poster"
             : "https://via.placeholder.com/500x750?text=Sem+Imagem",
@@ -110,66 +113,77 @@ class _DestaqueFilmesState extends State<DestaqueFilmes> {
             itemBuilder: (context, index) {
               final filme = filmes[index];
 
-              return ClipRRect(
-                borderRadius: BorderRadius.circular(14),
-                child: Stack(
-                  children: [
-                    // IMAGEM — sem corte
-                    Positioned.fill(
-                      child: Image.network(
-                        filme["imageUrl"]!,
-                        fit: BoxFit.cover,
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => DetalhesPage(
+                        movieId: filme["id"],
                       ),
                     ),
-
-                    // GRADIENTE LEVE EM BAIXO
-                    Positioned.fill(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.transparent,
-                              Colors.black.withOpacity(0.55),
-                            ],
-                          ),
+                  );
+                },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: Stack(
+                    children: [
+                      // IMAGEM
+                      Positioned.fill(
+                        child: Image.network(
+                          filme["imageUrl"]!,
+                          fit: BoxFit.cover,
                         ),
                       ),
-                    ),
 
-                    // TÍTULO NO CANTO INFERIOR ESQUERDO — sem overflow
-                    Positioned(
-                      left: 16,
-                      bottom: 20,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.60),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxWidth:
-                            MediaQuery.of(context).size.width * 0.80,
-                          ),
-                          child: Text(
-                            filme["title"]!,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 16, // menor como pediu
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                      // GRADIENTE
+                      Positioned.fill(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                Colors.black.withOpacity(0.55),
+                              ],
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+
+                      // TÍTULO
+                      Positioned(
+                        left: 16,
+                        bottom: 20,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.60),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: MediaQuery.of(context).size.width * 0.80,
+                            ),
+                            child: Text(
+                              filme["title"]!,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
