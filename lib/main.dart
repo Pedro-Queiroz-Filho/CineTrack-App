@@ -1,23 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'home.dart';
 
-import 'login.dart';
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-void main() {
+  await Hive.initFlutter();
+
+  await Hive.openBox('liked_movies');
+  await Hive.openBox("movie_reviews");
+  await Hive.openBox("movie_ratings");
+  await Hive.openBox('pending_movies');
+  await Hive.openBox('watched_movies');
+
+
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    return const SizedBox.shrink();
+  };
+
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter App',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
       ),
-      home: LoginPage(),
+      home: const HomePage(),
     );
   }
 }
